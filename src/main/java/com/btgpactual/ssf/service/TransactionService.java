@@ -1,6 +1,7 @@
 package com.btgpactual.ssf.service;
 
 import com.btgpactual.ssf.dto.APIResponseDTO;
+import com.btgpactual.ssf.dto.SimpleTransactionDTO;
 import com.btgpactual.ssf.dto.TransactionsDTO;
 import com.btgpactual.ssf.dto.UserDTO;
 

@@ -77,8 +77,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public TransactionsDTO setEntityToDTOSimple(TransactionsEntity transaction){
-        UserDTO userDTO = userService.setEntityToDTO(transaction.getUsuario());
-        FoundDTO foundDTO = foundService.setEntityToDTO(transaction.getFondo());
         TransactionsDTO dto = new TransactionsDTO();
 
         dto.setId(transaction.getId());
@@ -86,8 +84,6 @@ public class TransactionServiceImpl implements TransactionService {
         dto.setMonto(transaction.getMonto());
         dto.setTipo(transaction.getTipo());
         dto.setFcreacion(transaction.getFcreacion());
-        dto.setUsuario(userDTO);
-        dto.setFondo(foundDTO);
         return dto;
     }
 
@@ -110,8 +106,10 @@ public class TransactionServiceImpl implements TransactionService {
         Optional<TransactionsEntity> transactionEntityOptional = Optional.of(new TransactionsEntity());
         try{
             transactionEntityOptional = transactionRepository.findById(id);
-            if(transactionEntityOptional.isPresent()){
+            System.out.println("transactionEntityOptional");
                 TransactionsEntity transactionsEntity = transactionEntityOptional.get();
+            System.out.println(transactionsEntity.getTipo());
+            if(transactionEntityOptional.isPresent()){
                 TransactionsDTO transaction = setEntityToDTOSimple(transactionsEntity);
                 response.setResponse(transaction, constants.messages.consultGood, "200");
             }else {
@@ -189,25 +187,4 @@ public class TransactionServiceImpl implements TransactionService {
         }
         return response;
     }
-
-//    public APIResponseDTO<String> updateUser(UserDTO user, long id){
-//        APIResponseDTO<String> response = new APIResponseDTO<>();
-//        try {
-//            UserEntity userEntity = setDTOToEntity(user);
-//            if(!userRepository.existsById(userEntity.getId())){
-//                response.setFailError(constants.messages.noData, "400", "vacio");
-//            }
-//            if (userEntity == null) {
-//                response.setFailError(constants.messages.getGetResponseErrorSwitchDTOToEntity, "500", "error");
-//            }else{
-//                userEntity.setId(id);
-//                System.out.println(userEntity);
-//                userRepository.updateUser(user.getNombres(), user.getCorreo(), user.getTelefono(), user.getMonto(), id);
-//                response.setSuccess(constants.messages.responseSaveUserGood, "200");
-//            }
-//        } catch (Exception e) {
-//            response.setFailError(constants.messages.getResponseUpdateError, "500", e.getMessage());
-//        }
-//        return response;
-//    }
 }
