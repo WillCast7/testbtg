@@ -60,7 +60,6 @@ public class UserServiceImpl implements UserService {
 
     public UserEntity setDTOToEntity(UserDTO userParam){
         UserEntity dto = new UserEntity();
-        dto.setId(userParam.getId());
         dto.setNombres(userParam.getNombres());
         dto.setCorreo(userParam.getCorreo());
         dto.setTelefono(userParam.getTelefono());
@@ -99,27 +98,6 @@ public class UserServiceImpl implements UserService {
             }
         } catch (Exception e) {
             response.setFailError(constants.messages.getResponseSaveError, "500", e.getMessage());
-        }
-        return response;
-    }
-
-    public APIResponseDTO<String> updateUser(UserDTO user, long id){
-        APIResponseDTO<String> response = new APIResponseDTO<>();
-        try {
-            UserEntity userEntity = setDTOToEntity(user);
-            if(!userRepository.existsById(userEntity.getId())){
-                response.setFailError(constants.messages.noData, "400", "vacio");
-            }
-            if (userEntity == null) {
-                response.setFailError(constants.messages.getGetResponseErrorSwitchDTOToEntity, "500", "error");
-            }else{
-                userEntity.setId(id);
-                System.out.println(userEntity);
-                userRepository.updateUser(user.getNombres(), user.getCorreo(), user.getTelefono(), user.getMonto(), id);
-                response.setSuccess(constants.messages.responseSaveUserGood, "200");
-            }
-        } catch (Exception e) {
-            response.setFailError(constants.messages.getResponseUpdateError, "500", e.getMessage());
         }
         return response;
     }

@@ -166,10 +166,7 @@ public class TransactionServiceImpl implements TransactionService {
                     }else {
                         newAmount = userEntity.getMonto() + transaction.getMonto();
                     }
-                System.out.println("newAmount");
-                System.out.println(newAmount);
-                System.out.println(transaction.getTipo());
-                System.out.println(transaction.getTipo() == constants.variables.subscription);
+
                     int transactionCounter = transactionRepository.countTransactions(transaction.getMonto(),
                             transaction.getUsuario().getId(),
                             constants.variables.subscription);

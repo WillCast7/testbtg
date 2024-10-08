@@ -1,42 +1,68 @@
 # Prueba William Castaño
 
-En una transaccion de apertura resta el dinero, validando si cumple con el monto minimo del fondo, si el usuario cuenta con los recursos, si el fondo es valido y si el usuario es valido
-En el momento en el que se crea la transaccion de cancelacion suma al monto del usuario si La transaccion de apertura existe
-Este proyecto tiene una base de datos integrada, para hacer uso de ella se debe configurar un servidor de base de datos postgres con las siguientes credenciales:
+Este documento describe el funcionamiento de un sistema de gestión de transacciones que incluye la apertura y cancelación de fondos. A continuación, se detallan los procesos y la configuración necesaria para implementar el sistema.
 
-username=postgres
-password=admin
-puerto=5432
-nombre de base de datos = ssf
+## Descripción del Sistema
 
-o en su defecto cambiar las credenciales en src/main/resources/aplication.properties
+En una **transacción de apertura**, se deduce el monto del usuario, validando que cumpla con el monto mínimo del fondo, que el usuario tenga los recursos suficientes, y que tanto el fondo como el usuario sean válidos. En caso de que se realice una **transacción de cancelación**, se suma el monto al usuario siempre que exista una transacción de apertura correspondiente.
 
-#Transacciones
-   *Crear transaccion* POST - http://localhost:8080/transaction
-      body:
-         {
-            monto: int
-            tipo: String | puede serapertura o cancelacion
-            usuario: {
-               id: int 
-               },
-            fondo: {
-               id: int
-               }
-         }
-         Ejemplo:
-            {
-               "monto": 200000,
-               "tipo": "apertura",
-               "usuario": {"id": 2},
-               "fondo": {"id":2}
-            }
-   
-   *Listar transacciones paginadas* GET - http://localhost:8080/transaction?itemsPerPage=10&activePage=0
-   
-   *Traer Transaccion* GET - http://localhost:8080/transaction/{id}
+## Configuración de la Base de Datos
 
-#Usuarios
-   *Listar transacciones paginadas* GET - http://localhost:8080/user?itemsPerPage=10&activePage=0
-   
-   *Traer uSUARIO  * GET - http://localhost:8080/transaction/{id}
+Este proyecto utiliza una base de datos PostgreSQL. Para configurarla, es necesario tener un servidor PostgreSQL en funcionamiento con las siguientes credenciales:
+
+- **Nombre de usuario:** postgres
+- **Contraseña:** admin
+- **Puerto:** 5432
+- **Nombre de base de datos:** ssf
+
+Alternativamente, puedes modificar las credenciales en `src/main/resources/application.properties`.
+
+## Transacciones
+
+### Crear Transacción
+
+- **Método:** POST
+- **URL:** `http://localhost:8080/transaction`
+- **Cuerpo:**
+  ```json
+  {
+    "monto": int,
+    "tipo": "apertura" | "cancelacion",
+    "usuario": {
+      "id": int 
+    },
+    "fondo": {
+      "id": int
+    }
+  }
+  ```
+  ### Listar Transacciones
+  - **Método:** GET
+  - **URL:** `http://localhost:8080/transaction`
+ 
+  ### Buscar Transaccion por id
+  - **Método:** GET
+  - **URL:** `http://localhost:8080/transaction/{id}`
+  
+
+  ## Usuarios
+  ### Crear Usuario
+  - **Método:** POST
+  - **URL:** `http://localhost:8080/user`
+  - **Cuerpo:**
+  ```json
+  {
+    "nombres": String,
+     "telefono": String,
+     "correo": String,
+     "monto": int
+   }
+  ```
+  ### Listar Usuarios
+  - **Método:** GET
+  - **URL:** `http://localhost:8080/user`
+ 
+  ### Buscar Usuario por id
+  - **Método:** GET
+  - **URL:** `http://localhost:8080/user/{id}`
+  
