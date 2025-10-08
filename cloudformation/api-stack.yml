@@ -1,0 +1,82 @@
+# Despliegue en AWS
+
+## Backend Java 23
+
+### 1. Crear la base de datos
+Primero crea una base de datos PostgreSQL en AWS RDS:
+  - Base de datos: `ssf`
+  - Usuario: `postgres`
+  - Contraseña: `Admin`
+
+Guarda el endpoint que te da AWS (algo como: `ssf-db.xxxxxx.us-east-1.rds.amazonaws.com`)
+
+### 2. Configurar el backend
+  En tu proyecto Java, actualiza el archivo `application-prod.yml` con el endpoint de tu base de datos.
+  
+  ### 3. Compilar el proyecto
+  ```bash
+  mvn clean package
+  ```
+  
+  ### 4. Desplegar en Elastic Beanstalk
+  ```bash
+  # Primera vez
+  eb init -p "Corretto 23" -r us-east-1 backend-java
+  eb create production
+  
+  # Actualizar después
+  eb deploy
+  ```
+  
+  ### 5. Configurar variables de entorno
+  ```bash
+  eb setenv SPRING_DATASOURCE_URL=jdbc:postgresql://TU-ENDPOINT:5432/ssf
+  ```
+
+---
+
+## Frontend Angular 20
+
+### 1. Actualizar la URL del backend
+Edita `src/environments/environment.prod.ts` y pon la URL que te dio Elastic Beanstalk.
+  
+  ### 2. Compilar
+```bash
+ng build --configuration=production
+```
+  
+  ### 3. Crear bucket en S3
+```bash
+aws s3 mb s3://nombre-de-tu-bucket
+aws s3 website s3://nombre-de-tu-bucket --index-document index.html
+```
+  
+  ### 4. Subir archivos
+```bash
+aws s3 sync dist/browser/ s3://nombre-de-tu-bucket/ --delete
+```
+  
+  ### 5. Hacer el bucket público
+En AWS Console → S3 → Tu bucket → Permissions → Bucket Policy, pega la política del archivo `s3-bucket-policy.json`
+
+---
+
+## Acceder a tu aplicación
+
+- **Backend**: `http://tu-app.elasticbeanstalk.com`
+- **Frontend**: `http://tu-bucket.s3-website-us-east-1.amazonaws.com`
+
+---
+
+## Problemas comunes
+
+  **El backend no conecta a la base de datos:**
+- Revisa que el Security Group de RDS permita conexiones desde Elastic Beanstalk
+- Verifica el endpoint en las variables de entorno
+  
+  **Error de CORS en el frontend:**
+- Agrega la URL del frontend en la configuración CORS del backend
+  
+  **Página en blanco en S3:**
+- Verifica que el bucket sea público
+- Revisa la consola del navegador para ver errores

@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://TU-ENDPOINT-RDS:5432/ssf
+    username: postgres
+    password: Admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+server:
+  port: 5000
