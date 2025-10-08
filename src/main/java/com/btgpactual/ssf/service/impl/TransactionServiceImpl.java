@@ -1,9 +1,6 @@
 package com.btgpactual.ssf.service.impl;
 
-import com.btgpactual.ssf.dto.APIResponseDTO;
-import com.btgpactual.ssf.dto.FoundDTO;
-import com.btgpactual.ssf.dto.TransactionsDTO;
-import com.btgpactual.ssf.dto.UserDTO;
+import com.btgpactual.ssf.dto.*;
 import com.btgpactual.ssf.model.entity.FoundsEntity;
 import com.btgpactual.ssf.model.entity.TransactionsEntity;
 import com.btgpactual.ssf.model.entity.UserEntity;
@@ -67,12 +64,27 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public TransactionsDTO setEntityToDTO(TransactionsEntity transaction){
-        TransactionsDTO dto = new TransactionsDTO();
-        dto.setId(transaction.getId());
-        dto.setId(transaction.getId());
-        dto.setMonto(transaction.getMonto());
-        dto.setTipo(transaction.getTipo());
-        dto.setFcreacion(transaction.getFcreacion());
+        UserDTO user = UserDTO.builder()
+                .id(transaction.getUsuario().getId())
+                .monto(transaction.getUsuario().getMonto())
+                .correo(transaction.getUsuario().getCorreo())
+                .nombres(transaction.getUsuario().getNombres())
+                .telefono(transaction.getUsuario().getTelefono())
+                .build();
+
+        FoundDTO found = FoundDTO.builder()
+                .nombre(transaction.getFondo().getNombre())
+                .categoria(transaction.getFondo().getCategoria())
+                .montomin(transaction.getFondo().getMontomin())
+                .id(transaction.getFondo().getId())
+                .build();
+
+        TransactionsDTO dto = TransactionsDTO.builder()
+                .monto(transaction.getMonto())
+                .fondo(found)
+                .usuario(user)
+                .tipo(transaction.getTipo())
+                .build();
         return dto;
     }
 
@@ -87,13 +99,13 @@ public class TransactionServiceImpl implements TransactionService {
         return dto;
     }
 
-    public TransactionsEntity setDTOToEntity(TransactionsDTO transactionParams){
+    public TransactionsEntity setDTOToEntity(TransactionDTO transactionParams){
         TransactionsEntity entity = new TransactionsEntity();
         UserEntity userEntity = new UserEntity();
         FoundsEntity foundsEntity = new FoundsEntity();
 
-        foundsEntity.setId(transactionParams.getFondo().getId());
-        userEntity.setId(transactionParams.getUsuario().getId());
+        foundsEntity.setId((long) transactionParams.getFondo());
+        userEntity.setId((long) transactionParams.getUsuario());
         entity.setTipo(transactionParams.getTipo());
         entity.setMonto(transactionParams.getMonto());
         entity.setUsuario(userEntity);
@@ -122,7 +134,7 @@ public class TransactionServiceImpl implements TransactionService {
         return response;
     }
 
-    public APIResponseDTO<String> saveTransaction(TransactionsDTO transaction){
+    public APIResponseDTO<String> saveTransaction(TransactionDTO transaction){
         APIResponseDTO<String> response = new APIResponseDTO<>();
         System.out.println(transaction);
         try {
@@ -133,8 +145,8 @@ public class TransactionServiceImpl implements TransactionService {
             if (transactionsEntity == null) {
                 response.setFailError(constants.messages.getGetResponseErrorSwitchDTOToEntity, "500", "error");
             }else{
-                userEntityOptional = userRepository.findById(transaction.getUsuario().getId());
-                foundEntityOptional = foundsRepository.findById(transaction.getFondo().getId());
+                userEntityOptional = userRepository.findById((long) transaction.getUsuario());
+                foundEntityOptional = foundsRepository.findById((long) transaction.getFondo());
 
                 if(!userEntityOptional.isPresent()) {
                     response.setFailError(constants.messages.getResponseSaveError, "400", "El usuario no existe");
@@ -166,13 +178,10 @@ public class TransactionServiceImpl implements TransactionService {
                     }
 
                     int transactionCounter = transactionRepository.countTransactions(transaction.getMonto(),
-                            transaction.getUsuario().getId(),
+                            transaction.getUsuario(),
                             constants.variables.subscription);
 
-                    System.out.println(transactionCounter == 0);
-                    System.out.println(Objects.equals(transactionCounter,0) && Objects.equals(transaction.getTipo(), constants.variables.unsubscription));
-                    System.out.println(Objects.equals(transaction.getTipo(), constants.variables.unsubscription));
-                    if(Objects.equals(transactionCounter,0) && Objects.equals(transaction.getTipo(), constants.variables.unsubscription)){
+                     if(Objects.equals(transactionCounter,0) && Objects.equals(transaction.getTipo(), constants.variables.unsubscription)){
                         response.setFailError(constants.messages.getResponseSaveError, "400", constants.messages.errorUnsubscriptionForSubscription);
                         return response;
                     }

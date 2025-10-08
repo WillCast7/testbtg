@@ -1,9 +1,6 @@
 package com.btgpactual.ssf.controller;
 
-import com.btgpactual.ssf.dto.APIResponseDTO;
-import com.btgpactual.ssf.dto.SimpleTransactionDTO;
-import com.btgpactual.ssf.dto.TransactionsDTO;
-import com.btgpactual.ssf.dto.UserDTO;
+import com.btgpactual.ssf.dto.*;
 import com.btgpactual.ssf.service.TransactionService;
 import com.btgpactual.ssf.service.UserService;
 import jakarta.validation.Valid;
@@ -29,8 +26,9 @@ public class transactionsControllers {
         return transactionService.getTransaction(id);
     }
 
-    @PostMapping
-    public APIResponseDTO postTransaction(@Valid @RequestBody TransactionsDTO transaction) {
+    @PostMapping(produces = "application/json")
+    public APIResponseDTO postTransaction(@RequestBody TransactionDTO transaction) {
+        System.out.println("working?");
         return transactionService.saveTransaction(transaction);
     }
 }

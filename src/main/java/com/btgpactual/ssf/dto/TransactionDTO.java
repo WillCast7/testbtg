@@ -20,13 +20,9 @@ public class TransactionDTO {
     private int monto;
 
     @NotNull
-    @Pattern(regexp = "^(apertura|cancelacion)$", message = "El tipo debe ser 'apertura' o 'cancelacion'.")
     private String tipo;
-    private LocalDateTime fcreacion;
-    private LocalDateTime fedicion;
 
-    private UserDTO usuario;
+    private int usuario;
 
-    private FoundDTO fondo;
-
+    private int fondo;
 }
